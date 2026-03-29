@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, provide } from 'vue'
+import { useAppLayoutState } from './useAppLayoutState.js'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 const props = defineProps({
@@ -28,44 +28,9 @@ const props = defineProps({
 // ─── Emits ────────────────────────────────────────────────────────────────────
 const emit = defineEmits(['sidebar-toggle'])
 
-// ─── State ────────────────────────────────────────────────────────────────────
-const isCollapsed = ref(props.defaultCollapsed)
-const isMobileOpen = ref(false)
-
-// ─── Computed ─────────────────────────────────────────────────────────────────
-const currentSidebarWidth = computed(() =>
-  isCollapsed.value ? props.sidebarCollapsedWidth : props.sidebarWidth
-)
-
-const cssVars = computed(() => ({
-  '--layout-header-height': `${props.headerHeight}px`,
-  '--layout-sidebar-width': `${props.sidebarWidth}px`,
-  '--layout-sidebar-collapsed-width': `${props.sidebarCollapsedWidth}px`,
-  '--layout-sidebar-current-width': `${currentSidebarWidth.value}px`,
-}))
-
-// ─── Methods ─────────────────────────────────────────────────────────────────
-function toggleSidebar() {
-  isCollapsed.value = !isCollapsed.value
-  emit('sidebar-toggle', isCollapsed.value)
-}
-
-function toggleMobile() {
-  isMobileOpen.value = !isMobileOpen.value
-}
-
-function closeMobile() {
-  isMobileOpen.value = false
-}
-
-// ─── Provide to children ──────────────────────────────────────────────────────
-provide('layout', {
-  isCollapsed,
-  isMobileOpen,
-  toggleSidebar,
-  toggleMobile,
-  closeMobile,
-})
+// ─── State & Logic (tách ra useAppLayoutState) ────────────────────────────────
+const { isCollapsed, isMobileOpen, cssVars, toggleSidebar, toggleMobile, closeMobile } =
+    useAppLayoutState(props, emit)
 </script>
 
 <template>

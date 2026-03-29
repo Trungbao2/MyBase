@@ -5,12 +5,13 @@ import { computed } from 'vue'
 const props = defineProps({
   /**
    * Kiểu hiển thị của button
-   * @values 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger'
+   * @values 'default' | 'primary' | 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'outline' | 'ghost'
    */
   variant: {
     type: String,
-    default: 'primary',
-    validator: (val) => ['primary', 'secondary', 'outline', 'ghost', 'danger'].includes(val),
+    default: 'default',
+    validator: (val) =>
+      ['default', 'primary', 'success', 'info', 'warning', 'danger', 'secondary', 'outline', 'ghost'].includes(val),
   },
 
   /**
@@ -41,6 +42,30 @@ const props = defineProps({
     default: false,
   },
 
+  /**
+   * Kiểu Plain — nền nhạt, chữ có màu
+   */
+  plain: {
+    type: Boolean,
+    default: false,
+  },
+
+  /**
+   * Bo tròn hoàn toàn (pill shape)
+   */
+  round: {
+    type: Boolean,
+    default: false,
+  },
+
+  /**
+   * Hình tròn — dùng cho icon-only button
+   */
+  circle: {
+    type: Boolean,
+    default: false,
+  },
+
   /** HTML type attribute */
   type: {
     type: String,
@@ -57,6 +82,9 @@ const classes = computed(() => [
   `btn--${props.variant}`,
   `btn--${props.size}`,
   {
+    'btn--plain': props.plain,
+    'btn--round': props.round,
+    'btn--circle': props.circle,
     'btn--disabled': props.disabled,
     'btn--loading': props.loading,
     'btn--block': props.block,
@@ -95,7 +123,12 @@ function handleClick(event) {
     </span>
 
     <!-- Default content -->
-    <span class="btn__label">
+    <span v-if="!circle" class="btn__label">
+      <slot />
+    </span>
+
+    <!-- Circle icon content -->
+    <span v-if="circle" class="btn__icon btn__icon--circle">
       <slot />
     </span>
 
@@ -107,69 +140,128 @@ function handleClick(event) {
 </template>
 
 <style lang="scss" scoped>
-// ─── Variables ────────────────────────────────────────────────────────────────
+// ─── Color token map ──────────────────────────────────────────────────────────
+// Mỗi variant: (solid bg, solid hover, solid active, text, border, plain-bg, plain-text, plain-border)
 $variants: (
+  'default': (
+    bg:           var(--color-bg),
+    bg-hover:     var(--color-bg-subtle),
+    bg-active:    var(--color-bg-muted),
+    text:         var(--color-text),
+    border:       var(--color-border-strong),
+    plain-bg:     var(--color-bg),
+    plain-text:   var(--color-text),
+    plain-border: var(--color-border-strong),
+  ),
   'primary': (
-    bg: var(--color-primary-600),
-    bg-hover: var(--color-primary-700),
-    bg-active: var(--color-primary-800),
-    text: var(--color-text-inverse),
-    border: transparent,
+    bg:           var(--color-primary-600),
+    bg-hover:     var(--color-primary-700),
+    bg-active:    var(--color-primary-800),
+    text:         #fff,
+    border:       transparent,
+    plain-bg:     var(--color-primary-50),
+    plain-text:   var(--color-primary-600),
+    plain-border: var(--color-primary-200),
   ),
-  'secondary': (
-    bg: var(--color-bg-subtle),
-    bg-hover: var(--color-border),
-    bg-active: var(--color-border-strong),
-    text: var(--color-text),
-    border: var(--color-border),
+  'success': (
+    bg:           #22c55e,
+    bg-hover:     #16a34a,
+    bg-active:    #15803d,
+    text:         #fff,
+    border:       transparent,
+    plain-bg:     #f0fdf4,
+    plain-text:   #16a34a,
+    plain-border: #bbf7d0,
   ),
-  'outline': (
-    bg: transparent,
-    bg-hover: var(--color-primary-50),
-    bg-active: var(--color-primary-100),
-    text: var(--color-primary-600),
-    border: var(--color-primary-500),
+  'info': (
+    bg:           #6b7280,
+    bg-hover:     #4b5563,
+    bg-active:    #374151,
+    text:         #fff,
+    border:       transparent,
+    plain-bg:     #f3f4f6,
+    plain-text:   #4b5563,
+    plain-border: #d1d5db,
   ),
-  'ghost': (
-    bg: transparent,
-    bg-hover: var(--color-bg-subtle),
-    bg-active: var(--color-bg-muted),
-    text: var(--color-text),
-    border: transparent,
+  'warning': (
+    bg:           #f59e0b,
+    bg-hover:     #d97706,
+    bg-active:    #b45309,
+    text:         #fff,
+    border:       transparent,
+    plain-bg:     #fffbeb,
+    plain-text:   #d97706,
+    plain-border: #fde68a,
   ),
   'danger': (
-    bg: var(--color-danger-500),
-    bg-hover: var(--color-danger-600),
-    bg-active: var(--color-danger-600),
-    text: var(--color-text-inverse),
-    border: transparent,
+    bg:           var(--color-danger-500),
+    bg-hover:     var(--color-danger-600),
+    bg-active:    var(--color-danger-600),
+    text:         #fff,
+    border:       transparent,
+    plain-bg:     #fff5f5,
+    plain-text:   var(--color-danger-600),
+    plain-border: #fed7d7,
+  ),
+  'secondary': (
+    bg:           var(--color-bg-subtle),
+    bg-hover:     var(--color-border),
+    bg-active:    var(--color-border-strong),
+    text:         var(--color-text),
+    border:       var(--color-border),
+    plain-bg:     var(--color-bg-subtle),
+    plain-text:   var(--color-text-muted),
+    plain-border: var(--color-border),
+  ),
+  'outline': (
+    bg:           transparent,
+    bg-hover:     var(--color-primary-50),
+    bg-active:    var(--color-primary-100),
+    text:         var(--color-primary-600),
+    border:       var(--color-primary-500),
+    plain-bg:     transparent,
+    plain-text:   var(--color-primary-600),
+    plain-border: var(--color-primary-500),
+  ),
+  'ghost': (
+    bg:           transparent,
+    bg-hover:     var(--color-bg-subtle),
+    bg-active:    var(--color-bg-muted),
+    text:         var(--color-text),
+    border:       transparent,
+    plain-bg:     transparent,
+    plain-text:   var(--color-text),
+    plain-border: transparent,
   ),
 );
 
 $sizes: (
   'sm': (
-    height: 2rem,
-    padding: 0 var(--spacing-3),
-    font-size: var(--font-size-sm),
-    radius: var(--radius-md),
-    gap: var(--spacing-1),
-    icon-size: 14px,
+    height:     2rem,
+    padding:    0 var(--spacing-3),
+    font-size:  var(--font-size-sm),
+    radius:     var(--radius-md),
+    gap:        var(--spacing-1),
+    icon-size:  14px,
+    circle-w:   2rem,
   ),
   'md': (
-    height: 2.5rem,
-    padding: 0 var(--spacing-4),
-    font-size: var(--font-size-sm),
-    radius: var(--radius-lg),
-    gap: var(--spacing-2),
-    icon-size: 16px,
+    height:     2.5rem,
+    padding:    0 var(--spacing-4),
+    font-size:  var(--font-size-sm),
+    radius:     var(--radius-lg),
+    gap:        var(--spacing-2),
+    icon-size:  16px,
+    circle-w:   2.5rem,
   ),
   'lg': (
-    height: 3rem,
-    padding: 0 var(--spacing-6),
-    font-size: var(--font-size-md),
-    radius: var(--radius-lg),
-    gap: var(--spacing-2),
-    icon-size: 18px,
+    height:     3rem,
+    padding:    0 var(--spacing-6),
+    font-size:  var(--font-size-md),
+    radius:     var(--radius-lg),
+    gap:        var(--spacing-2),
+    icon-size:  18px,
+    circle-w:   3rem,
   ),
 );
 
@@ -207,8 +299,8 @@ $sizes: (
   @each $name, $props in $variants {
     &--#{$name} {
       background-color: map-get($props, bg);
-      color: map-get($props, text);
-      border-color: map-get($props, border);
+      color:            map-get($props, text);
+      border-color:     map-get($props, border);
 
       &:hover:not(.btn--disabled):not(.btn--loading) {
         background-color: map-get($props, bg-hover);
@@ -217,22 +309,59 @@ $sizes: (
       &:active:not(.btn--disabled):not(.btn--loading) {
         background-color: map-get($props, bg-active);
       }
+
+      // Plain modifier — áp dụng khi .btn--plain đi kèm với variant này
+      &.btn--plain {
+        background-color: map-get($props, plain-bg);
+        color:            map-get($props, plain-text);
+        border-color:     map-get($props, plain-border);
+
+        &:hover:not(.btn--disabled):not(.btn--loading) {
+          // Plain hover: nhẹ hơn solid một chút
+          background-color: map-get($props, bg);
+          color:            map-get($props, text);
+          border-color:     map-get($props, bg);
+        }
+      }
     }
   }
 
   // ── Sizes ──────────────────────────────────────────────────
   @each $name, $props in $sizes {
     &--#{$name} {
-      height: map-get($props, height);
-      padding: map-get($props, padding);
-      font-size: map-get($props, font-size);
+      height:        map-get($props, height);
+      padding:       map-get($props, padding);
+      font-size:     map-get($props, font-size);
       border-radius: map-get($props, radius);
-      gap: map-get($props, gap);
+      gap:           map-get($props, gap);
 
       .btn__icon svg {
-        width: map-get($props, icon-size);
+        width:  map-get($props, icon-size);
         height: map-get($props, icon-size);
       }
+
+      // Circle override
+      &.btn--circle {
+        width:   map-get($props, circle-w);
+        padding: 0;
+      }
+    }
+  }
+
+  // ── Shape modifiers ────────────────────────────────────────
+  &--round {
+    border-radius: var(--radius-full) !important;
+  }
+
+  &--circle {
+    border-radius: 50% !important;
+    aspect-ratio: 1;
+    padding: 0;
+
+    .btn__icon--circle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
 
