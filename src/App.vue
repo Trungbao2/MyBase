@@ -6,7 +6,7 @@ import { useAppShell } from '@/composables/useAppShell'
 import '@/assets/styles/main.css'
 
 const { isDark, toggleTheme } = useTheme()
-const { navItems, isActive, router } = useAppShell()
+const { navGroups, isActive, router } = useAppShell()
 </script>
 
 <template>
@@ -53,25 +53,33 @@ const { navItems, isActive, router } = useAppShell()
                     <span class="sidebar-logo__text">Components</span>
                 </div>
 
-                <!-- Nav group -->
-                <div class="sidebar-group">
-                    <span v-if="!isCollapsed" class="sidebar-group__label">Thư viện</span>
-
-                    <button
-                        v-for="item in navItems"
-                        :key="item.id"
-                        class="sidebar-item"
-                        :class="{ 'sidebar-item--active': isActive(item.path) }"
-                        :title="isCollapsed ? item.label : ''"
-                        @click="router.push(item.path)"
+                <!-- Nav groups -->
+                <div class="sidebar-groups">
+                    <div
+                        v-for="group in navGroups"
+                        :key="group.id"
+                        class="sidebar-group"
                     >
-                        <span class="sidebar-item__icon">{{ item.icon }}</span>
-                        <span v-if="!isCollapsed" class="sidebar-item__label">{{ item.label }}</span>
-                        <span
-                            v-if="!isCollapsed && isActive(item.path)"
-                            class="sidebar-item__dot"
-                        />
-                    </button>
+                        <span v-if="!isCollapsed" class="sidebar-group__label">
+                            {{ group.label }}
+                        </span>
+
+                        <button
+                            v-for="item in group.items"
+                            :key="item.id"
+                            class="sidebar-item"
+                            :class="{ 'sidebar-item--active': isActive(item.path) }"
+                            :title="isCollapsed ? item.label : ''"
+                            @click="router.push(item.path)"
+                        >
+                            <span class="sidebar-item__icon">{{ item.icon }}</span>
+                            <span v-if="!isCollapsed" class="sidebar-item__label">{{ item.label }}</span>
+                            <span
+                                v-if="!isCollapsed && isActive(item.path)"
+                                class="sidebar-item__dot"
+                            />
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Bottom section -->
@@ -185,12 +193,20 @@ const { navItems, isActive, router } = useAppShell()
     }
 }
 
+.sidebar-groups {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    padding: 0;
+    flex: 1;
+    overflow-y: auto;
+}
+
 .sidebar-group {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-1);
     padding: 0 var(--spacing-2);
-    flex: 1;
 
     &__label {
         font-size: var(--font-size-xs);
