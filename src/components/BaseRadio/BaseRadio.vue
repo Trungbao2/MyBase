@@ -31,6 +31,11 @@ const props = defineProps({
         default: 'md',
         validator: (val) => ['sm', 'md', 'lg'].includes(val),
     },
+    /** Màu sắc tùy chỉnh (Hỗ trợ mã Hex, RGB, hoặc CSS Variable) */
+    color: {
+        type: String,
+        default: '',
+    },
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -42,6 +47,16 @@ function handleChange() {
         emit('update:modelValue', props.value)
     }
 }
+
+// Tính toán các biến CSS để ghi đè màu sắc nếu prop color được truyền vào
+const customStyles = computed(() => {
+    if (!props.color) return {}
+    return {
+        '--radio-color-main': props.color,
+        '--radio-color-hover': props.color, // Có thể làm đậm/nhạt tùy ý, ở đây dùng tạm màu gốc
+        '--radio-color-bg': `color-mix(in srgb, ${props.color} 10%, transparent)`,
+    }
+})
 </script>
 
 <template>
@@ -52,6 +67,7 @@ function handleChange() {
             { 'base-radio--checked': isChecked },
             { 'base-radio--disabled': disabled },
         ]"
+        :style="customStyles"
         @click.prevent="handleChange"
     >
         <!-- Hidden native input để accessibility vẫn hoạt động -->
@@ -79,6 +95,12 @@ function handleChange() {
 <style lang="scss" scoped>
 // ─── Base ─────────────────────────────────────────────────────────────────────
 .base-radio {
+    /* Đặt biến mặc định bằng primary nếu thẻ Cha không cung cấp style từ customStyles */
+    --radio-color-main: var(--color-primary-500);
+    --radio-color-hover: var(--color-primary-400);
+    --radio-color-bg: var(--color-primary-50);
+    --radio-color-shadow: color-mix(in srgb, var(--radio-color-main) 12%, transparent);
+
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-2);
@@ -112,7 +134,7 @@ function handleChange() {
     // ── Inner dot ───────────────────────────────────────────────────────────
     &__dot {
         border-radius: var(--radius-full);
-        background: var(--color-primary-500);
+        background: var(--radio-color-main);
         transform: scale(0);
         transition: transform var(--transition-fast) cubic-bezier(0.34, 1.56, 0.64, 1);
     }
@@ -129,16 +151,16 @@ function handleChange() {
     // ── Hover ───────────────────────────────────────────────────────────────
     &:hover:not(.base-radio--disabled) {
         .base-radio__control {
-            border-color: var(--color-primary-400);
-            box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary-500) 12%, transparent);
+            border-color: var(--radio-color-hover);
+            box-shadow: 0 0 0 3px var(--radio-color-shadow);
         }
     }
 
     // ── Checked ─────────────────────────────────────────────────────────────
     &--checked {
         .base-radio__control {
-            border-color: var(--color-primary-500);
-            background: var(--color-primary-50);
+            border-color: var(--radio-color-main);
+            background: var(--radio-color-bg);
         }
 
         .base-radio__dot {
@@ -146,7 +168,7 @@ function handleChange() {
         }
 
         .base-radio__label {
-            color: var(--color-primary-700);
+            color: var(--color-text); /* Thay vì ép thành màu xanh, ta để màu text thường hoặc biến thể nếu cần */
         }
     }
 

@@ -53,6 +53,33 @@ const {
                     </div>
                 </div>
 
+                <!-- Custom Color -->
+                <div class="demo-card demo-card--full">
+                    <h3 class="demo-card__title">Custom Color</h3>
+                    <div class="demo-card__body demo-col">
+                        <div class="demo-row">
+                            <BaseRadio
+                                v-model="selectedBasic"
+                                value="opt-red"
+                                label="Màu Đỏ (Hex)"
+                                color="#ef4444"
+                            />
+                            <BaseRadio
+                                v-model="selectedBasic"
+                                value="opt-green"
+                                label="Màu Xanh (Hex)"
+                                color="#10b981"
+                            />
+                            <BaseRadio
+                                v-model="selectedBasic"
+                                value="opt-purple"
+                                label="Màu Tím (CSS Var)"
+                                color="var(--color-primary-600)"
+                            />
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Sizes -->
                 <div class="demo-card">
                     <h3 class="demo-card__title">Sizes</h3>
@@ -83,6 +110,32 @@ const {
                             :label="opt.label"
                             :disabled="opt.disabled ?? false"
                         />
+                    </div>
+                </div>
+
+                <!-- Horizontal vs Vertical Layout -->
+                <div class="demo-card demo-card--full">
+                    <h3 class="demo-card__title">Layout (Ngang & Dọc)</h3>
+                    <div class="demo-card__body" style="display: flex; gap: 32px; flex-wrap: wrap;">
+                        <!-- Chiều ngang -->
+                        <div style="flex: 1; min-width: 250px;">
+                            <h4 style="margin-bottom: 12px; font-size: 14px; color: var(--color-text-muted);">1. Xếp Chiều Ngang (.demo-row)</h4>
+                            <div class="demo-row">
+                                <BaseRadio v-model="selectedBasic" value="option1" label="Một" />
+                                <BaseRadio v-model="selectedBasic" value="option2" label="Hai" />
+                                <BaseRadio v-model="selectedBasic" value="option3" label="Ba" />
+                            </div>
+                        </div>
+
+                        <!-- Chiều dọc -->
+                        <div style="flex: 1; min-width: 250px;">
+                            <h4 style="margin-bottom: 12px; font-size: 14px; color: var(--color-text-muted);">2. Xếp Chiều Dọc (.demo-col)</h4>
+                            <div class="demo-col">
+                                <BaseRadio v-model="selectedBasic" value="option1" label="Lựa chọn đầu tiên" />
+                                <BaseRadio v-model="selectedBasic" value="option2" label="Lựa chọn thứ hai" />
+                                <BaseRadio v-model="selectedBasic" value="option3" label="Lựa chọn thứ ba" />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
