@@ -25,6 +25,7 @@ export function useAppShell() {
             label: 'Form',
             items: [
                 { id: 'radio', path: '/form/radio', icon: '⭕', label: 'Radio' },
+                { id: 'input', path: '/form/input', icon: '📝', label: 'Input' },
             ],
         },
     ]
