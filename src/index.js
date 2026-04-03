@@ -15,6 +15,8 @@ import './assets/styles/main.css'
 // ── Components ────────────────────────────────────────────────────────────────
 export { default as BaseButton } from './components/BaseButton/index.js'
 export { default as AppLayout } from './components/AppLayout/index.js'
+export { default as BaseRadio } from './components/BaseRadio/index.js'
+export { default as BaseInput } from './components/BaseInput/index.js'
 
 // ── Composables ───────────────────────────────────────────────────────────────
 export { useTheme } from './composables/useTheme.js'
@@ -22,8 +24,10 @@ export { useTheme } from './composables/useTheme.js'
 // ── Component list for app.use() ──────────────────────────────────────────────
 import BaseButton from './components/BaseButton/index.js'
 import AppLayout from './components/AppLayout/index.js'
+import BaseRadio from './components/BaseRadio/index.js'
+import BaseInput from './components/BaseInput/index.js'
 
-const components = [BaseButton, AppLayout]
+const components = [BaseButton, AppLayout, BaseRadio, BaseInput]
 
 // ── Plugin install ────────────────────────────────────────────────────────────
 const MyUI = {
